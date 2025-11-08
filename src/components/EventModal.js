@@ -12,21 +12,21 @@ const labelsClasses = [
 
 export default function EventModal() {
   const {
-    setShowEventModal,
-    daySelected,
-    dispatchCalEvent,
-    selectedEvent,
+    setShowEventModal: openEventModal,
+    daySelected: selectedDate,
+    dispatchCalEvent : dispatchCalendarEvent,
+    selectedEvent :activeEvent,
   } = useContext(GlobalContext);
 
   const [title, setTitle] = useState(
-    selectedEvent ? selectedEvent.title : ""
+    activeEvent ? activeEvent.title : ""
   );
   const [description, setDescription] = useState(
-    selectedEvent ? selectedEvent.description : ""
+    activeEvent ? activeEvent.description : ""
   );
   const [selectedLabel, setSelectedLabel] = useState(
-    selectedEvent
-      ? labelsClasses.find((lbl) => lbl === selectedEvent.label)
+    activeEvent
+      ? labelsClasses.find((lbl) => lbl === activeEvent.label)
       : labelsClasses[0]
   );
 
@@ -36,16 +36,16 @@ export default function EventModal() {
       title,
       description,
       label: selectedLabel,
-      day: daySelected.valueOf(),
-      id: selectedEvent ? selectedEvent.id : Date.now(),
+      day: selectedDate.valueOf(),
+      id: activeEvent ? activeEvent.id : Date.now(),
     };
-    if (selectedEvent) {
-      dispatchCalEvent({ type: "update", payload: calendarEvent });
+    if (activeEvent) {
+      dispatchCalendarEvent({ type: "update", payload: calendarEvent });
     } else {
-      dispatchCalEvent({ type: "push", payload: calendarEvent });
+      dispatchCalendarEvent({ type: "push", payload: calendarEvent });
     }
 
-    setShowEventModal(false);
+    openEventModal(false);
   }
   return (
     <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center">
@@ -55,21 +55,21 @@ export default function EventModal() {
             drag_handle
           </span>
           <div>
-            {selectedEvent && (
+            {activeEvent && (
               <span
                 onClick={() => {
-                  dispatchCalEvent({
+                  dispatchCalendarEvent({
                     type: "delete",
-                    payload: selectedEvent,
+                    payload: activeEvent,
                   });
-                  setShowEventModal(false);
+                  openEventModal(false);
                 }}
                 className="material-icons-outlined text-gray-400 cursor-pointer"
               >
                 delete
               </span>
             )}
-            <button onClick={() => setShowEventModal(false)}>
+            <button onClick={() => openEventModal(false)}>
               <span className="material-icons-outlined text-gray-400">
                 close
               </span>
@@ -91,7 +91,7 @@ export default function EventModal() {
             <span className="material-icons-outlined text-gray-400">
               schedule
             </span>
-            <p>{daySelected.format("dddd, MMMM DD")}</p>
+            <p>{selectedDate.format("dddd, MMMM DD")}</p>
             <span className="material-icons-outlined text-gray-400">
               segment
             </span>
@@ -108,13 +108,13 @@ export default function EventModal() {
               bookmark_border
             </span>
             <div className="flex gap-x-2">
-              {labelsClasses.map((lblClass, i) => (
+              {labelsClasses.map((color, i) => (
                 <span
                   key={i}
-                  onClick={() => setSelectedLabel(lblClass)}
-                  className={`bg-${lblClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                  onClick={() => setSelectedLabel(color)}
+                  className={`bg-${color}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
                 >
-                  {selectedLabel === lblClass && (
+                  {selectedLabel === color && (
                     <span className="material-icons-outlined text-white text-sm">
                       check
                     </span>

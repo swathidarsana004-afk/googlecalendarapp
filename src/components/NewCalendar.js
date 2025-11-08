@@ -3,31 +3,31 @@ import React, { useContext, useEffect, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
 import { getMonth } from "../util";
 
-export default function SmallCalendar() {
-  const [currentMonthIdx, setCurrentMonthIdx] = useState(
+export default function NewCalendar() {
+  const [monthIndexLocal, setMonthIndexLocal] = useState(
     dayjs().month()
   );
   const [currentMonth, setCurrentMonth] = useState(getMonth());
   useEffect(() => {
-    setCurrentMonth(getMonth(currentMonthIdx));
-  }, [currentMonthIdx]);
+    setCurrentMonth(getMonth(monthIndexLocal));
+  }, [monthIndexLocal]);
 
   const {
     monthIndex,
-    setSmallCalendarMonth,
+    setNewCalendarMonth,
     setDaySelected,
     daySelected,
   } = useContext(GlobalContext);
 
   useEffect(() => {
-    setCurrentMonthIdx(monthIndex);
+    setMonthIndexLocal(monthIndex);
   }, [monthIndex]);
 
   function handlePrevMonth() {
-    setCurrentMonthIdx(currentMonthIdx - 1);
+    setMonthIndexLocal(monthIndexLocal - 1);
   }
   function handleNextMonth() {
-    setCurrentMonthIdx(currentMonthIdx + 1);
+    setMonthIndexLocal(monthIndexLocal + 1);
   }
   function getDayClass(day) {
     const format = "DD-MM-YY";
@@ -46,19 +46,19 @@ export default function SmallCalendar() {
     <div className="mt-9">
       <header className="flex justify-between">
         <p className="text-gray-500 font-bold">
-          {dayjs(new Date(dayjs().year(), currentMonthIdx)).format(
+          {dayjs(new Date(dayjs().year(), monthIndexLocal)).format(
             "MMMM YYYY"
           )}
         </p>
         <div>
           <button onClick={handlePrevMonth}>
             <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-              chevron_left
+              previous_month
             </span>
           </button>
           <button onClick={handleNextMonth}>
             <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-              chevron_right
+              next_month
             </span>
           </button>
         </div>
@@ -69,13 +69,13 @@ export default function SmallCalendar() {
             {day.format("dd").charAt(0)}
           </span>
         ))}
-        {currentMonth.map((row, i) => (
+        {currentMonth.map((week, i) => (
           <React.Fragment key={i}>
-            {row.map((day, idx) => (
+            {week.map((day, idx) => (
               <button
                 key={idx}
                 onClick={() => {
-                  setSmallCalendarMonth(currentMonthIdx);
+                  setNewCalendarMonth(monthIndexLocal);
                   setDaySelected(day);
                 }}
                 className={`py-1 w-full ${getDayClass(day)}`}

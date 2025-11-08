@@ -18,21 +18,21 @@ function savedEventsReducer(state, { type, payload }) {
     case "delete":
       return state.filter((evt) => evt.id !== payload.id);
     default:
-      throw new Error();
+      throw new Error("Unknown action type");
   }
 }
+
 function initEvents() {
   const storageEvents = localStorage.getItem("savedEvents");
-  const parsedEvents = storageEvents ? JSON.parse(storageEvents) : [];
-  return parsedEvents;
+  return storageEvents ? JSON.parse(storageEvents) : [];
 }
 
-export default function ContextWrapper(props) {
+export default function ContextWrapper({ children }) {
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
   const [smallCalendarMonth, setSmallCalendarMonth] = useState(null);
   const [daySelected, setDaySelected] = useState(dayjs());
   const [showEventModal, setShowEventModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [activeEvent, setActiveEvent] = useState(null); // ✅ Correct variable
   const [labels, setLabels] = useState([]);
   const [savedEvents, dispatchCalEvent] = useReducer(
     savedEventsReducer,
@@ -57,12 +57,10 @@ export default function ContextWrapper(props) {
     setLabels((prevLabels) => {
       return [...new Set(savedEvents.map((evt) => evt.label))].map(
         (label) => {
-          const currentLabel = prevLabels.find(
-            (lbl) => lbl.label === label
-          );
+          const curr = prevLabels.find((l) => l.label === label);
           return {
             label,
-            checked: currentLabel ? currentLabel.checked : true,
+            checked: curr ? curr.checked : true,
           };
         }
       );
@@ -77,13 +75,13 @@ export default function ContextWrapper(props) {
 
   useEffect(() => {
     if (!showEventModal) {
-      setSelectedEvent(null);
+      setActiveEvent(null);
     }
   }, [showEventModal]);
 
-  function updateLabel(label) {
+  function updateLabel(newLabel) {
     setLabels(
-      labels.map((lbl) => (lbl.label === label.label ? label : lbl))
+      labels.map((lbl) => (lbl.label === newLabel.label ? newLabel : lbl))
     );
   }
 
@@ -99,8 +97,8 @@ export default function ContextWrapper(props) {
         showEventModal,
         setShowEventModal,
         dispatchCalEvent,
-        selectedEvent,
-        setSelectedEvent,
+        activeEvent,
+        setActiveEvent,
         savedEvents,
         setLabels,
         labels,
@@ -108,7 +106,7 @@ export default function ContextWrapper(props) {
         filteredEvents,
       }}
     >
-      {props.children}
+      {children}
     </GlobalContext.Provider>
   );
 }

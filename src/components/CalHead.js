@@ -2,18 +2,18 @@ import dayjs from "dayjs";
 import React, { useContext } from "react";
 import logo from "../assets/logo.png";
 import GlobalContext from "../context/GlobalContext";
-export default function CalendarHeader() {
-  const { monthIndex, setMonthIndex } = useContext(GlobalContext);
-  function handlePrevMonth() {
-    setMonthIndex(monthIndex - 1);
+export default function CalHead() {
+  const { monthIndex: currMonth, setMonthIndex: setCurrMonth } = useContext(GlobalContext);
+  function goToPrevMonth() {
+    setCurrMonth(currMonth - 1);
   }
-  function handleNextMonth() {
-    setMonthIndex(monthIndex + 1);
+  function goToNextMonth() {
+    setCurrMonth(currMonth + 1);
   }
   function handleReset() {
-    setMonthIndex(
-      monthIndex === dayjs().month()
-        ? monthIndex + Math.random()
+    setCurrMonth(
+      currMonth === dayjs().month()
+        ? currMonth + Math.random()
         : dayjs().month()
     );
   }
@@ -29,19 +29,19 @@ export default function CalendarHeader() {
       >
         Today
       </button>
-      <button onClick={handlePrevMonth}>
-        <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-          chevron_left
+      <button onClick={goToPrevMonth}>
+        <span className="material-icons-outlined cursor-pointer text-black-400 mx-4">
+          To previous_month
         </span>
       </button>
-      <button onClick={handleNextMonth}>
-        <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-          chevron_right
+      <button onClick={goToNextMonth}>
+        <span className="material-icons-outlined cursor-pointer text-black-400 mx-4">
+          To next_month
         </span>
       </button>
       <h2 className="ml-4 text-xl text-gray-500 font-bold">
-        {dayjs(new Date(dayjs().year(), monthIndex)).format(
-          "MMMM YYYY"
+        {dayjs(new Date(dayjs().year(), currMonth)).format(
+          "DD MM YYYY"
         )}
       </h2>
     </header>
